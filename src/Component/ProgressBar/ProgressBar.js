@@ -30,7 +30,7 @@ export default class ProgressBar1 extends React.Component {
       
       <ProgressBar
      
-      percent={this.props.Recoveredpercentage>0&&this.props.Recoveredpercentage<1?1:this.props.Recoveredpercentage}
+      percent={this.props.Recoveredpercentage>0&&this.props.Recoveredpercentage<1?2:this.props.Recoveredpercentage}
       text={this.props.Recoveredpercentage+"%"}
       filledBackground="#32CD32"
     />
@@ -40,7 +40,7 @@ export default class ProgressBar1 extends React.Component {
    
       <ProgressBar
      
-      percent={this.props.Deathpercentage>0&&this.props.Deathpercentage<1?1:this.props.Deathpercentage}
+      percent={this.props.Deathpercentage>0&&this.props.Deathpercentage<1?2:this.props.Deathpercentage}
       text={this.props.Deathpercentage+"%"}
       filledBackground="red"
     />

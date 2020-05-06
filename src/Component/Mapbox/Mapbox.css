@@ -3,7 +3,7 @@
     background-Color:#182f25;
     width:18%;
     position:absolute;
-   
+
     
 }
 .Navigation{
@@ -124,7 +124,7 @@
     .maindiv{
         height:100vh;
         background-Color:#182f25;
-        width:101px;
+        width:184px;
         position:absolute;
        
         
@@ -173,12 +173,12 @@
 @media  (min-width:1024px){
     .Map{
         position:absolute;
-        left:18%
+        left:16%
     }
     .maindiv{
         height:100vh;
         background-Color:#182f25;
-        width:18%;
+        width:16%;
         position:absolute;
        
         

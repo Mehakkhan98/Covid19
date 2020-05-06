@@ -7,7 +7,6 @@ import img1 from '../Images/darkmap.jpg';
 import img2 from '../Images/geogarphic map.jpg'
 import img3 from '../Images/map2.jpg'
 import Modal from '../Modal/Modal';
-//import Data from '../Data.json';
 import MapView1 from '../Mapbox/MapView1';
 import MapView2 from '../Mapbox/MapView2';
 import MapView3 from '../Mapbox/MapView3';
@@ -51,6 +50,7 @@ export default class Map extends React.Component {
         .then((res) => { ///yahan pr object arahi he full
           let keys = Object.keys(res.data.countryitems[0]);  /// yahan pr full api k each data ki key unique key geenrate ki he
           var precise=res.data.countryitems[0]
+          console.log("alldata:",precise)
           keys.forEach((l, index) => {   /// yahan ham by using key each elemnt ko access kr rahe hain 
             data.push({
               country: precise[l].title,
@@ -61,9 +61,11 @@ export default class Map extends React.Component {
               latestDeaths: precise[l].total_deaths,
               historyRecovered: null,
               latestRecovered: precise[l].total_recovered,
+              Active:precise[l].total_active_cases,
+              SeriousCases:precise[l].total_serious_cases,
               coordinates:[]
               
-              // Coordinates:this.GetLongLat(precise[l].title)
+             
             });
          
           }); 
@@ -109,7 +111,7 @@ export default class Map extends React.Component {
     
   
       componentDidUpdate(){
-        console.log("Dont Know What it is:",requestResponseData)
+       
         if(requestResponseData.length>0 && requestResponseData.length<183)
                   {
                    
@@ -121,7 +123,7 @@ export default class Map extends React.Component {
 render()
  {
    
-   
+   console.log("data i need is",requestResponseData)
   if(this.state.mapview===1){
   
     return (
@@ -160,14 +162,15 @@ render()
         </div> 
         {
         
-    this.state.allData.map((d,i)=>(
-     
-  console.log(d.coordinates[0] , d.coordinates[1])
+    requestResponseData.map((d,i)=>(
+    
+      
 
-        //   <Marker key={i}   latitude={d.coordinates[0]} longitude={d.coordinates[1]}>
-        //  {/* <Modal  data={this.state.Date} country={d.country}latestDeaths={this.state.data[i].latestDeaths} confirmed={this.state.data[i].latestConfirmed} latestRecovered={this.state.data[i].latestRecovered}/>
-        //      */}
-        //      </Marker>
+           <Marker key={i}   longitude={d.coordinates[0]} latitude={d.coordinates[1]}>
+         <Modal  Serious={d.SeriousCases} Active={d.Active}country={d.country}latestDeaths={d.latestDeaths} confirmed={d.latestConfirmed} latestRecovered={d.latestRecovered}/>
+         
+        
+             </Marker>
      ))
   }
            </ReactMapGL>
@@ -208,16 +211,20 @@ render()
           <div style={{color:'gray'}}>National Geographic</div>
           </div>
           </div> :null}  
-          <div className="Navigation" >
+          <div  className="Navigation" >
           <NavigationControl />
         </div>
         {
-        // this.state.data.map((d,key)=>( 
-           
-        //   //  <Marker key={key}   latitude={d.latitude} longitude={d.longitude}>
-        //   //   <Modal  data={this.state.Date} country={d.country}latestDeaths={this.state.data[key].latestDeaths} confirmed={this.state.data[key].latestConfirmed} latestRecovered={this.state.data[key].latestRecovered}/>
-        //   //   </Marker>
-        //     ))
+      requestResponseData.map((d,i)=>(
+    
+      
+
+        <Marker key={i}   longitude={d.coordinates[0]} latitude={d.coordinates[1]}>
+      <Modal  Serious={d.SeriousCases} Active={d.Active}country={d.country}latestDeaths={d.latestDeaths} confirmed={d.latestConfirmed} latestRecovered={d.latestRecovered}/>
+      
+     
+          </Marker>
+  ))
             
           }
         
@@ -263,14 +270,16 @@ render()
           <div className="Navigation">
           <NavigationControl />
         </div>
-        {/* {this.state.data.map((d,key)=>( 
-           
-           <Marker key={key}   latitude={d.latitude} longitude={d.longitude}>
-            <Modal  data={this.state.Date} country={d.country}latestDeaths={this.state.data[key].latestDeaths} confirmed={this.state.data[key].latestConfirmed} latestRecovered={this.state.data[key].latestRecovered}/>
-            </Marker>
-            ))
-            
-          } */}
+        {requestResponseData.map((d,i)=>(
+    
+      
+
+    <Marker key={i}   longitude={d.coordinates[0]} latitude={d.coordinates[1]}>
+  <Modal  Serious={d.SeriousCases} Active={d.Active}country={d.country} latestDeaths={d.latestDeaths} confirmed={d.latestConfirmed} latestRecovered={d.latestRecovered}/>
+  
+ 
+      </Marker>
+))}
            </ReactMapGL>
      
      </div> 
