@@ -7,60 +7,91 @@ import img1 from '../Images/darkmap.jpg';
 import img2 from '../Images/geogarphic map.jpg'
 import img3 from '../Images/map2.jpg'
 import Modal from '../Modal/Modal';
+//import Data from '../Data.json';
+import MapView1 from '../Mapbox/MapView1';
+import MapView2 from '../Mapbox/MapView2';
+import MapView3 from '../Mapbox/MapView3';
 import './Mapbox.css';
 
+const requestResponseData=[]
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
      this.state={
        data:[],
+       check:[],
        allData:[],
-       latitude:'',
-       longitude:'',
-       Api2Response:[],
-       Date:'',
        mapview:1,
        toggal:false,
+       
        totalConfirmedLatest: 0,
     totalDeathsLatest: 0,
     totalRecoveredLatest: 0,
        viewport:{
-          width: "80vw",
+          width: "82vw",
     height: "100vh",
   
-    // height:600,
-    // width:600,
+   
     latitude: 33.0,
     longitude: 65.0,
     zoom: 4
        },
       
      }
+
+    
   }
+  
  
   componentWillMount(){
+   
     let data = [];
       axios
         .get("https://api.thevirustracker.com/free-api?countryTotals=ALL")
-        .then((res) => { 
-          let keys = Object.keys(res.data.countryitems[0]);
-          keys.forEach((l, index) => {
+        .then((res) => { ///yahan pr object arahi he full
+          let keys = Object.keys(res.data.countryitems[0]);  /// yahan pr full api k each data ki key unique key geenrate ki he
+          var precise=res.data.countryitems[0]
+          keys.forEach((l, index) => {   /// yahan ham by using key each elemnt ko access kr rahe hain 
             data.push({
-              country: res.data.countryitems[0][l].title,
-              countryCode: res.data.countryitems[0][l].code,
+              country: precise[l].title,
+              countryCode: precise[l].code,
               historyConfirmed: null,
-              latestConfirmed: res.data.countryitems[0][l].total_cases,
+              latestConfirmed: precise[l].total_cases,
               historyDeaths: null,
-              latestDeaths: res.data.countryitems[0][l].total_deaths,
+              latestDeaths: precise[l].total_deaths,
               historyRecovered: null,
-              latestRecovered: res.data.countryitems[0][l].total_recovered,
+              latestRecovered: precise[l].total_recovered,
+              coordinates:[]
+              
+              // Coordinates:this.GetLongLat(precise[l].title)
             });
-          });
+         
+          }); 
+          
+          data.map((data,i)=>(
+         
+       
+            axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${data.country}.json?access_token=pk.eyJ1IjoibWVoYWtraGFuIiwiYSI6ImNrOHN5MTd3ZzAwamgzb29ic3EybWhuZWkifQ.B7TChUzxCD7J_RQZLqFxsg`)
+             .then(response => {
+            // data.coordinates='test'
+            requestResponseData[i]=data;
+           
+            requestResponseData[i].coordinates=response.data.features[0].center
+                
+                //  console.log(JSON.stringify(data))
+                
+               // console.log("Result",data.Coordinates)
+                  
+                  })
+                  
+               
+          )) ;
           axios
             .get("https://api.thevirustracker.com/free-api?global=stats")
             .then((res) => {
               let temp = [...data];
-              temp.splice(temp.length - 1, 1);
+            
+             // temp.splice(temp.length - 1, 1);
               this.setState({
                 allData: temp,
                 filteredData: temp,
@@ -72,61 +103,33 @@ export default class Map extends React.Component {
               
             });
         });
-        
+       
       
       }
-     componentDidMount(){
-       let temp = [...this.state.allData]
-      temp.map((data,i)=>(
-     
-      axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${data.country}.json?access_token=pk.eyJ1IjoibWVoYWtraGFuIiwiYSI6ImNrOHN5MTd3ZzAwamgzb29ic3EybWhuZWkifQ.B7TChUzxCD7J_RQZLqFxsg`)
-        .then(response => {
-           // response.data.features[0].geometry.coordinates 
-           data.Coordinates = response.data.features[0].geometry.coordinates
-          })
-          
-      ))
-      this.setState({allData: temp})
+    
+  
+      componentDidUpdate(){
+        console.log("Dont Know What it is:",requestResponseData)
+        if(requestResponseData.length>0 && requestResponseData.length<183)
+                  {
+                   
+      this.setState({
+        allData:requestResponseData
+      })
+    }
     }
 render()
  {
-
-  //  if(this.state.allData.length > 0){
-  //    if(!this.state.allData[0].Coordinates){
-  //     this.helperfunction()
-  //    }
    
-  //  }
-  //  console.log(this.state.allData[0].Coordinates)
-  
-  
+   
   if(this.state.mapview===1){
   
     return (
     
      <div style={{flexDirection:'row'}}>
-         <div className="maindiv">
-       
-       <div className="worldRecord">World Record</div>
-      <div>
-      <div className="WorldInfoHeading">Total Confirmed Case</div>
-      <div style={{color:'#FFFF66',fontSize:22}}>{this.state.totalConfirmedLatest}</div>
-      </div>
-
-      <div>
-      <div className="WorldInfoHeading">Total Recovered Case</div>
-      <div style={{color:'#32CD32',fontSize:22}}>{this.state.totalRecoveredLatest}</div>
-      </div>
-     
-      <div>
-      <div className="WorldInfoHeading">Total Death Case</div>
-      <div style={{color:'#FF6347',fontSize:22}}>{this.state.totalDeathsLatest}</div>
-      </div>
-          
-         
-          
-         
-         </div>
+       <MapView1 confirmed={this.state.totalConfirmedLatest} 
+       death={this.state.totalDeathsLatest} recovered={this.state.totalRecoveredLatest}/>
+    
       <div className="Map">          
 
     <ReactMapGL 
@@ -137,41 +140,36 @@ render()
        
       >
         
-         <div style={{position:'absolute',top:10,left:10}} onClick={()=>{this.state.toggal===false?this.setState({toggal:true}):this.setState({toggal:false})}}><i style={{fontSize:'48px',color:"red"}} className="fa fa-gear"></i></div>
-          {this.state.toggal===true?<div style={{position:'absolute',top:55,left:38,width:200,alignSelf: "flex-end",borderWidth:2,borderRadius:10,borderColor:'red',backgroundColor:'black'}}>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10,color:'red'}} onClick={()=>this.setState({mapview:1})}>
-            <img style={{height:30,width:50}}src={img1} alt="map1"></img>
+         <div className="SettingIcon" onClick={()=>{this.state.toggal===false?this.setState({toggal:true}):this.setState({toggal:false})}}>
+           <i style={{fontSize:'48px',color:"red"}} className="fa fa-gear"></i></div>
+          {this.state.toggal===true?<div className="toggalViews1">
+          <div className="MapStyle" onClick={()=>this.setState({mapview:1})}>
+            <img  className="img" src={img1} alt="map1"></img>
          <div style={{color:'red'}}>Dark Gray Canvas</div></div>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10}}  onClick={()=>this.setState({mapview:2})}>
-            <img style={{height:30,width:50}}src={img3} alt="map1"></img>
+          <div className="MapStyle"  onClick={()=>this.setState({mapview:2})}>
+            <img className="img" src={img3} alt="map1"></img>
           <div style={{color:'gray'}}>Light Gray Canvas</div>
           </div>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10}}  onClick={()=>this.setState({mapview:3})}>
-            <img style={{height:30,width:50}}src={img2} alt="map1"></img>
+          <div className="MapStyle"  onClick={()=>this.setState({mapview:3})}>
+            <img className="img" src={img2} alt="map1"></img>
           <div style={{color:'gray'}}>National Geographic</div>
           </div>
           </div> :null}  
-          <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right:0,
-            padding: "10px"
-          }}
-        >
+          <div className="Navigation">
           <NavigationControl />
         </div> 
         {
-         
-        //  this.state.allData.map((d,key)=>( 
-          
-        //   // <Marker key={key}   latitude={} longitude={}>
-        //   //   <Modal  data={this.state.d} country={d.country}latestDeaths={d.latestDeaths} confirmed={d.latestConfirmed} latestRecovered={d.latestRecovered}/>
-        //   //   </Marker>
-       
-        //     ))
-            
-          }
+        
+    this.state.allData.map((d,i)=>(
+     
+  console.log(d.coordinates[0] , d.coordinates[1])
+
+        //   <Marker key={i}   latitude={d.coordinates[0]} longitude={d.coordinates[1]}>
+        //  {/* <Modal  data={this.state.Date} country={d.country}latestDeaths={this.state.data[i].latestDeaths} confirmed={this.state.data[i].latestConfirmed} latestRecovered={this.state.data[i].latestRecovered}/>
+        //      */}
+        //      </Marker>
+     ))
+  }
            </ReactMapGL>
      
      </div> 
@@ -184,31 +182,9 @@ render()
   {
     return (
       <div style={{flexDirection:'row'}}>
-         <div className="maindiv">
-      {/* <div style={{position:'absolute',top:30,left:30,borderWidth:2,borderRadius:10,backgroundColor:'red',height:100,width:200,color:'gray'}}>
-      */}
-       <div className="worldRecord">World Record</div>
-      <div>
-      <div className="WorldInfoHeading">Total Confirmed Case</div>
-      <div style={{color:'yellow',fontSize:22}}>{this.state.totalConfirmedLatest}</div>
-      </div>
-{/*      
-      <div style={{position:'absolute',top:150,left:30,borderWidth:2,borderRadius:10,backgroundColor:'red',height:100,width:200,color:'gray'}}>
-      */}
-      <div>
-      <div className="WorldInfoHeading">Total Recovered Case</div>
-      <div style={{color:'green',fontSize:22}}>{this.state.totalRecoveredLatest}</div>
-      </div>
-      {/* <div style={{position:'absolute',top:270,left:30,borderWidth:2,borderRadius:10,backgroundColor:'red',height:100,width:200,color:'gray'}}>
-      */}
-      <div>
-      <div className="WorldInfoHeading">Total Death Case</div>
-      <div style={{color:'#FF6347',fontSize:22}}>{this.state.totalDeathsLatest}</div>
-      </div>
-          
-         
-         </div>
-      
+         <MapView2 confirmed={this.state.totalConfirmedLatest} 
+         death={this.state.totalDeathsLatest} recovered={this.state.totalRecoveredLatest}/>
+    
       <div className="Map">          
     <ReactMapGL 
     mapStyle={'mapbox://styles/mehakkhan/ck8u0ini70wsz1il9s1a5b03x'}
@@ -216,37 +192,32 @@ render()
        mapboxApiAccessToken={'pk.eyJ1IjoibWVoYWtraGFuIiwiYSI6ImNrOHN5MTd3ZzAwamgzb29ic3EybWhuZWkifQ.B7TChUzxCD7J_RQZLqFxsg'}
        onViewportChange={(viewport) => this.setState({viewport})}
        zoomInLabel='Zoom In'>
-            <div style={{position:'absolute',top:10,left:10}} onClick={()=>{this.state.toggal===false?this.setState({toggal:true}):this.setState({toggal:false})}}><i style={{fontSize:'48px',color:"red"}} className="fa fa-gear"></i></div>
-          {this.state.toggal===true?<div style={{position:'absolute',top:55,left:38,width:200,alignSelf: "flex-end",borderWidth:2,borderRadius:10,borderColor:'red',backgroundColor:'#D3D3D3'}}>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10,color:'red'}} onClick={()=>this.setState({mapview:1})}>
-            <img style={{height:30,width:50}}src={img1} alt="map1"></img>
+            <div className="SettingIcon" 
+            onClick={()=>{this.state.toggal===false?this.setState({toggal:true}):
+            this.setState({toggal:false})}}><i style={{fontSize:'48px',color:"red"}} className="fa fa-gear"></i></div>
+          {this.state.toggal===true?<div className="toggalViews">
+          <div className="MapSelectedStyle" onClick={()=>this.setState({mapview:1})}>
+            <img  className="img" src={img1} alt="map1"></img>
          <div style={{color:'gray'}}>Dark Gray Canvas</div></div>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10}}  onClick={()=>this.setState({mapview:2})}>
-            <img style={{height:30,width:50}}src={img3} alt="map1"></img>
+          <div className="MapStyle"  onClick={()=>this.setState({mapview:2})}>
+            <img className="img" src={img3} alt="map1"></img>
           <div style={{color:'red'}}>Light Gray Canvas</div>
           </div>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10}}  onClick={()=>this.setState({mapview:3})}>
-            <img style={{height:30,width:50}}src={img2} alt="map1"></img>
+          <div  className="MapStyle" onClick={()=>this.setState({mapview:3})}>
+            <img  className="img" src={img2} alt="map1"></img>
           <div style={{color:'gray'}}>National Geographic</div>
           </div>
           </div> :null}  
-          <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right:0,
-            padding: "10px"
-          }}
-        >
+          <div className="Navigation" >
           <NavigationControl />
         </div>
         {
-        this.state.data.map((d,key)=>( 
+        // this.state.data.map((d,key)=>( 
            
-           <Marker key={key}   latitude={d.latitude} longitude={d.longitude}>
-            <Modal  data={this.state.Date} country={d.country}latestDeaths={this.state.data[key].latestDeaths} confirmed={this.state.data[key].latestConfirmed} latestRecovered={this.state.data[key].latestRecovered}/>
-            </Marker>
-            ))
+        //   //  <Marker key={key}   latitude={d.latitude} longitude={d.longitude}>
+        //   //   <Modal  data={this.state.Date} country={d.country}latestDeaths={this.state.data[key].latestDeaths} confirmed={this.state.data[key].latestConfirmed} latestRecovered={this.state.data[key].latestRecovered}/>
+        //   //   </Marker>
+        //     ))
             
           }
         
@@ -263,30 +234,9 @@ render()
   {
     return (
       <div style={{flexDirection:'row'}}>
-       <div className="maindiv">
-      {/* <div style={{position:'absolute',top:30,left:30,borderWidth:2,borderRadius:10,backgroundColor:'red',height:100,width:200,color:'gray'}}>
-      */}
-       <div className="worldRecord">World Record</div>
-      <div>
-      <div className="WorldInfoHeading">Total Confirmed Case</div>
-      <div style={{color:'yellow',fontSize:22}}>{this.state.totalConfirmedLatest}</div>
-      </div>
-{/*      
-      <div style={{position:'absolute',top:150,left:30,borderWidth:2,borderRadius:10,backgroundColor:'red',height:100,width:200,color:'gray'}}>
-      */}
-      <div>
-      <div className="WorldInfoHeading">Total Recovered Case</div>
-      <div style={{color:'green',fontSize:22}}>{this.state.totalRecoveredLatest}</div>
-      </div>
-      {/* <div style={{position:'absolute',top:270,left:30,borderWidth:2,borderRadius:10,backgroundColor:'red',height:100,width:200,color:'gray'}}>
-      */}
-      <div>
-      <div className="WorldInfoHeading">Total Death Case</div>
-      <div style={{color:'#FF6347',fontSize:22}}>{this.state.totalDeathsLatest}</div>
-      </div>
-          
-         
-         </div>
+        <MapView3 confirmed={this.state.totalConfirmedLatest}
+         death={this.state.totalDeathsLatest} recovered={this.state.totalRecoveredLatest}/>
+    
    
    <div className="Map">        
     <ReactMapGL 
@@ -295,38 +245,32 @@ render()
        mapboxApiAccessToken={'pk.eyJ1IjoibWVoYWtraGFuIiwiYSI6ImNrOHN5MTd3ZzAwamgzb29ic3EybWhuZWkifQ.B7TChUzxCD7J_RQZLqFxsg'}
        onViewportChange={(viewport) => this.setState({viewport})}
        zoomInLabel='Zoom In'>
-           <div style={{position:'absolute',top:10,left:10}} onClick={()=>{this.state.toggal===false?this.setState({toggal:true}):this.setState({toggal:false})}}><i style={{fontSize:'48px',color:"red"}} className="fa fa-gear"></i></div>
-          {this.state.toggal===true?<div style={{position:'absolute',top:55,left:38,width:200,alignSelf: "flex-end",borderWidth:2,borderRadius:10,borderColor:'red',backgroundColor:'#D3D3D3'}}>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10,color:'red'}} onClick={()=>this.setState({mapview:1})}>
-            <img style={{height:30,width:50}}src={img1} alt="map1"></img>
+           <div className="SettingIcon" onClick={()=>{this.state.toggal===false?this.setState({toggal:true}):this.setState({toggal:false})}}>
+             <i style={{fontSize:'48px',color:"red"}} className="fa fa-gear"></i></div>
+          {this.state.toggal===true?<div className="toggalViews">
+          <div className="MapStyle" onClick={()=>this.setState({mapview:1})}>
+            <img  className="img" src={img1} alt="map1"></img>
          <div style={{color:'gray'}}>Dark Gray Canvas</div></div>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10}}  onClick={()=>this.setState({mapview:2})}>
-            <img style={{height:30,width:50}}src={img3} alt="map1"></img>
+          <div className="MapStyle"  onClick={()=>this.setState({mapview:2})}>
+            <img className="img" src={img3} alt="map1"></img>
           <div style={{color:'gray'}}>Light Gray Canvas</div>
           </div>
-          <div style={{marginRight:10,marginTop:10,marginBottom:10}}  onClick={()=>this.setState({mapview:3})}>
-            <img style={{height:30,width:50}}src={img2} alt="map1"></img>
+          <div className="MapStyle"  onClick={()=>this.setState({mapview:3})}>
+            <img className="img" src={img2} alt="map1"></img>
           <div style={{color:'red'}}>National Geographic</div>
           </div>
           </div> :null}  
-          <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right:0,
-            padding: "10px"
-          }}
-        >
+          <div className="Navigation">
           <NavigationControl />
         </div>
-        {this.state.data.map((d,key)=>( 
+        {/* {this.state.data.map((d,key)=>( 
            
            <Marker key={key}   latitude={d.latitude} longitude={d.longitude}>
             <Modal  data={this.state.Date} country={d.country}latestDeaths={this.state.data[key].latestDeaths} confirmed={this.state.data[key].latestConfirmed} latestRecovered={this.state.data[key].latestRecovered}/>
             </Marker>
             ))
             
-          }
+          } */}
            </ReactMapGL>
      
      </div> 

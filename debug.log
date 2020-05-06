@@ -4,3 +4,6 @@
 [0502/155547.257:ERROR:registration_protocol_win.cc(64)] BuildSecurityDescriptor: The specified network provider name is invalid. (0x4B4)
 [0502/155547.261:ERROR:crashpad_client_win.cc(508)] CreateProcess: Insufficient system resources exist to complete the requested service. (0x5AA)
 [0502/212229.046:ERROR:process_info.cc(359)] UncheckedAllocate
+[0503/144928.117:ERROR:process_info.cc(359)] UncheckedAllocate
+[0503/174522.022:ERROR:process_info.cc(359)] UncheckedAllocate
+[0504/000436.927:ERROR:process_info.cc(359)] UncheckedAllocate
