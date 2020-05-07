@@ -27,7 +27,7 @@ export default class Map extends React.Component {
     totalDeathsLatest: 0,
     totalRecoveredLatest: 0,
        viewport:{
-          width: "82vw",
+          width: "84vw",
     height: "100vh",
   
    
@@ -122,8 +122,7 @@ export default class Map extends React.Component {
     }
 render()
  {
-   
-   console.log("data i need is",requestResponseData)
+  
   if(this.state.mapview===1){
   
     return (
@@ -185,8 +184,9 @@ render()
   {
     return (
       <div style={{flexDirection:'row'}}>
-         <MapView2 confirmed={this.state.totalConfirmedLatest} 
-         death={this.state.totalDeathsLatest} recovered={this.state.totalRecoveredLatest}/>
+          <MapView1 confirmed={this.state.totalConfirmedLatest} 
+       death={this.state.totalDeathsLatest} recovered={this.state.totalRecoveredLatest}/>
+    
     
       <div className="Map">          
     <ReactMapGL 
@@ -194,7 +194,7 @@ render()
         {...this.state.viewport}
        mapboxApiAccessToken={'pk.eyJ1IjoibWVoYWtraGFuIiwiYSI6ImNrOHN5MTd3ZzAwamgzb29ic3EybWhuZWkifQ.B7TChUzxCD7J_RQZLqFxsg'}
        onViewportChange={(viewport) => this.setState({viewport})}
-       zoomInLabel='Zoom In'>
+       zoomInLbel='Zoom In'>
             <div className="SettingIcon" 
             onClick={()=>{this.state.toggal===false?this.setState({toggal:true}):
             this.setState({toggal:false})}}><i style={{fontSize:'48px',color:"red"}} className="fa fa-gear"></i></div>
@@ -221,8 +221,6 @@ render()
 
         <Marker key={i}   longitude={d.coordinates[0]} latitude={d.coordinates[1]}>
       <Modal  Serious={d.SeriousCases} Active={d.Active}country={d.country}latestDeaths={d.latestDeaths} confirmed={d.latestConfirmed} latestRecovered={d.latestRecovered}/>
-      
-     
           </Marker>
   ))
             
@@ -241,8 +239,8 @@ render()
   {
     return (
       <div style={{flexDirection:'row'}}>
-        <MapView3 confirmed={this.state.totalConfirmedLatest}
-         death={this.state.totalDeathsLatest} recovered={this.state.totalRecoveredLatest}/>
+        <MapView1 confirmed={this.state.totalConfirmedLatest} 
+       death={this.state.totalDeathsLatest} recovered={this.state.totalRecoveredLatest}/>
     
    
    <div className="Map">        

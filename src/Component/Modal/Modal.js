@@ -1,7 +1,6 @@
-import React,{ useEffect,useState } from 'react';
+import React,{} from 'react';
 import Modal from 'react-modal';
 import  ProgressBar  from "../ProgressBar/ProgressBar";
-import axios from 'axios';
 const customStyles = {
   content : {
     top                   : '50%',
@@ -24,7 +23,7 @@ const customStyles = {
 
  
 export default function App(props){
- console.log("serious:",props.Serious)
+ 
  
  
  

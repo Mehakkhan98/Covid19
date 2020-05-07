@@ -177,12 +177,21 @@
     }
     .maindiv{
         height:100vh;
-        background-Color:#182f25;
+       /*  background-Color:#182f25; */
+        background-Color:black;
         width:16%;
         position:absolute;
-       
+        border-bottom-right-radius:10 ;
+      
         
     }
+    @keyframes example {
+        0%   {background-color:green; left:0px; top:0px;}
+        25%  {background-color:green; left:15px; top:0px;}
+        50%  {background-color:green; left:15px; top:15px;}
+        75%  {background-color:green; left:0px; top:20px;}
+        100% {background-color:green; left:0px; top:0px;}
+      }
     .img{
         height:30px;
         width:50px
@@ -219,14 +228,21 @@
         margin-top:10px;
         margin-bottom:10px;
         font-size: 32px;
-        font-weight:bold
+        font-weight:bold;
+      
     }
     .WorldInfoHeading{
         color:white;
         margin-Top:15px;
         margin-Bottom:10px;
-        font-size:24px
+        border-radius: 10px;
+        font-size:21px;
+        position: relative;
+        font-style: italic;
+        animation-name: example;
+        animation-duration: 4s;
     }
+    
 }
 /* @media  (min-width:1280px){
     .maindiv{

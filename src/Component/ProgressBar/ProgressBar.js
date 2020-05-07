@@ -19,7 +19,7 @@ export default class ProgressBar1 extends React.Component {
     
       <ProgressBar
      
-        percent={this.props.confirmedpercentage}
+        percent={this.props.confirmedpercentage>0&&this.props.confirmedpercentage<1?2:this.props.confirmedpercentage}
         text={this.props.confirmedpercentage+"%"}
         filledBackground="linear-gradient(to right, #fefb72, #f0bb31)"
       />
