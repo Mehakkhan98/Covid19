@@ -8,8 +8,6 @@ import img2 from '../Images/geogarphic map.jpg'
 import img3 from '../Images/map2.jpg'
 import Modal from '../Modal/Modal';
 import MapView1 from '../Mapbox/MapView1';
-import MapView2 from '../Mapbox/MapView2';
-import MapView3 from '../Mapbox/MapView3';
 import './Mapbox.css';
 
 const requestResponseData=[]
@@ -47,11 +45,10 @@ export default class Map extends React.Component {
     let data = [];
       axios
         .get("https://api.thevirustracker.com/free-api?countryTotals=ALL")
-        .then((res) => { ///yahan pr object arahi he full
-          let keys = Object.keys(res.data.countryitems[0]);  /// yahan pr full api k each data ki key unique key geenrate ki he
+        .then((res) => { 
+          let keys = Object.keys(res.data.countryitems[0]);  
           var precise=res.data.countryitems[0]
-          console.log("alldata:",precise)
-          keys.forEach((l, index) => {   /// yahan ham by using key each elemnt ko access kr rahe hain 
+          keys.forEach((l, index) => {    
             data.push({
               country: precise[l].title,
               countryCode: precise[l].code,
