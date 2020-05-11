@@ -20,6 +20,7 @@ export default class Map extends React.Component {
        allData:[],
        mapview:1,
        toggal:false,
+       Loader:true,
        
        totalConfirmedLatest: 0,
     totalDeathsLatest: 0,
@@ -90,14 +91,14 @@ export default class Map extends React.Component {
             .then((res) => {
               let temp = [...data];
             
-             // temp.splice(temp.length - 1, 1);
+             
               this.setState({
                 allData: temp,
                 filteredData: temp,
                 totalConfirmedLatest: res.data.results[0].total_cases,
                 totalDeathsLatest: res.data.results[0].total_deaths,
                 totalRecoveredLatest: res.data.results[0].total_recovered,
-                loading: false,
+                Loader:false,
               });
               
             });
@@ -126,7 +127,9 @@ render()
     
      <div style={{flexDirection:'row'}}>
        <MapView1 confirmed={this.state.totalConfirmedLatest} 
-       death={this.state.totalDeathsLatest} recovered={this.state.totalRecoveredLatest}/>
+       death={this.state.totalDeathsLatest} 
+       recovered={this.state.totalRecoveredLatest}
+       Loading={this.state.Loader}/>
     
       <div className="Map">          
 
